@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FocusFragment">
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="250dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+        
+        <TextView
+            android:id="@+id/hourText"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:textSize="60sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/timer_background"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:text=":"
+            android:textColor="@color/main"
+            android:textSize="60sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/minText"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:textSize="60sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/timer_background"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:text=":"
+            android:textColor="@color/main"
+            android:textSize="60sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/secondText"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:textSize="60sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:background="@drawable/timer_background"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:text="Start"
+        android:textAllCaps="false"
+        android:textSize="25sp"
+        android:background="@drawable/round_button_background"
+        android:textColor="@color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="250dp"/>
+
+
+</RelativeLayout>

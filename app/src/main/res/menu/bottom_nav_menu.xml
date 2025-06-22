@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Focus"
+        android:icon="@drawable/baseline_av_timer_24"
+        android:id="@+id/focus"/>
+    <item android:title="Planner"
+        android:icon="@drawable/baseline_calendar_month_24"
+        android:id="@+id/planner"/>
+    <item android:title="To do"
+        android:icon="@drawable/baseline_list_24"
+        android:id="@+id/todo"/>
+    <item android:title="Notes"
+        android:icon="@drawable/baseline_note_24"
+        android:id="@+id/notes"/>
+    <item android:title="Progress"
+        android:icon="@drawable/baseline_track_changes_24"
+        android:id="@+id/progress"/>
+</menu>
