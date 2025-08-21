@@ -1,64 +1,148 @@
 package com.s22004966.timesapp;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
-
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PlannerFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.List;
+
 public class PlannerFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    EditText schedule, date, time;
+    Button addButton, locationButton;
+    private String selectedLocation = "";
+    private ActivityResultLauncher<Intent> mapPickerLauncher;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public PlannerFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment PlannerFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static PlannerFragment newInstance(String param1, String param2) {
-        PlannerFragment fragment = new PlannerFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    RecyclerView recyclerView;
+    DatabaseHelper db;
+    List<PlannerModel> plannerList;
+    PlannerAdapter adapter;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_planner, container, false);
+        View view = inflater.inflate(R.layout.fragment_planner, container, false);
+
+        // Bind UI elements
+        schedule = view.findViewById(R.id.scheduleInput);
+        date = view.findViewById(R.id.scheduleDate);
+        time = view.findViewById(R.id.scheduleTime);
+        addButton = view.findViewById(R.id.addScheduleButton);
+        locationButton = view.findViewById(R.id.locationPickButton);
+
+        // Disable keyboard input on tap-only fields
+        date.setFocusable(false);
+        date.setClickable(true);
+        time.setFocusable(false);
+        time.setClickable(true);
+        locationButton.setFocusable(false);
+        locationButton.setClickable(true);
+
+        recyclerView = view.findViewById(R.id.plannerRecyclerView);
+        db = new DatabaseHelper(getContext());
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // Load items from DB
+        plannerList = db.getAllSchedules();
+        adapter = new PlannerAdapter(plannerList);
+        recyclerView.setAdapter(adapter);
+
+        // Get current date
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        // Date Picker
+        date.setOnClickListener(v -> {
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view1, selectedYear, selectedMonth, selectedDay) -> {
+                        Calendar selectedDate = Calendar.getInstance();
+                        selectedDate.set(selectedYear, selectedMonth, selectedDay);
+                        String formattedDate = new SimpleDateFormat("MMM dd", Locale.getDefault()).format(selectedDate.getTime());
+                        date.setText(formattedDate);
+                    },
+                    year, month, day
+            );
+            datePickerDialog.show();
+        });
+
+        // Time Picker
+        time.setOnClickListener(v -> {
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
+            TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (view12, selectedHour, selectedMinute) -> {
+                        Calendar selectedTime = Calendar.getInstance();
+                        selectedTime.set(Calendar.HOUR_OF_DAY, selectedHour);
+                        selectedTime.set(Calendar.MINUTE, selectedMinute);
+                        String formattedTime = new SimpleDateFormat("h:mm a", Locale.getDefault()).format(selectedTime.getTime());
+                        time.setText(formattedTime);
+                    },
+                    hour, minute, false
+            );
+            timePickerDialog.show();
+        });
+
+        // Map Picker result handler
+        mapPickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), result -> {
+                    if (result.getResultCode() == getActivity().RESULT_OK && result.getData() != null) {
+                        // Get address string from MapActivity
+                        selectedLocation = result.getData().getStringExtra("address");
+                        locationButton.setText(selectedLocation != null ? selectedLocation : "Unknown Location");
+                    }
+                });
+
+        // Launch MapActivity
+        locationButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), MapActivity.class);
+            mapPickerLauncher.launch(intent);
+        });
+
+        // Add Schedule Button
+        addButton.setOnClickListener(v -> {
+            String scheduleString = schedule.getText().toString().trim();
+            String dataString = date.getText().toString().trim();
+            String timeString = time.getText().toString().trim();
+
+            if (scheduleString.isEmpty() || dataString.isEmpty() || timeString.isEmpty()) {
+                Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            db.insertSchedule(scheduleString, dataString, timeString, selectedLocation);
+            loadSchedules();
+
+            schedule.setText("");
+            date.setText("");
+            time.setText("");
+            locationButton.setText("Location");
+
+            Toast.makeText(getContext(), "Schedule added", Toast.LENGTH_SHORT).show();
+        });
+
+        return view;
+    }
+
+    private void loadSchedules() {
+        DatabaseHelper db = new DatabaseHelper(getContext());
+        plannerList.clear();
+        plannerList.addAll(db.getAllSchedules());
+        adapter.notifyDataSetChanged();
     }
 }

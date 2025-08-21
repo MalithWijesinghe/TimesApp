@@ -1,3 +1,21 @@
+import java.util.Properties
+import java.io.FileInputStream
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localProperties.load(FileInputStream(localPropertiesFile))
+}
+
+android {
+    defaultConfig {
+        // other defaultConfig settings
+
+        // Add the API key as a string resource
+        resValue("string", "google_maps_key", localProperties.getProperty("MAPS_API_KEY"))
+    }
+}
+
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -5,6 +23,7 @@ plugins {
 android {
     namespace = "com.s22004966.timesapp"
     compileSdk = 35
+
 
     defaultConfig {
         applicationId = "com.s22004966.timesapp"
@@ -45,4 +64,10 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation(libs.places)
+    implementation("androidx.biometric:biometric:1.1.0")
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
+
 }

@@ -2,10 +2,8 @@ package com.s22004966.timesapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -13,9 +11,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class Welcome extends AppCompatActivity {
-
     Button getStarted;
-   TextView login;
+    TextView login;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +27,7 @@ public class Welcome extends AppCompatActivity {
 
         getStarted = findViewById(R.id.getStartedButton);
         login = findViewById(R.id.loginTextButton);
+
         getStarted.setOnClickListener(v -> {
                 Intent intent = new Intent(Welcome.this, Signup.class);
                 startActivity(intent);

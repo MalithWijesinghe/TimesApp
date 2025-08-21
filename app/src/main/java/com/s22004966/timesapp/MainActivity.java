@@ -1,9 +1,9 @@
 package com.s22004966.timesapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -25,13 +25,18 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(MainActivity.this, Welcome.class);
-                startActivity(intent);
-                finish();
+        new Handler().postDelayed(() -> {
+            SharedPreferences preferences = getSharedPreferences("TimesAppPreferences", MODE_PRIVATE);
+            boolean isLogged = preferences.getBoolean("isLogged", false);
+
+            Intent intent;
+            if (isLogged) {
+                intent = new Intent(MainActivity.this, Authentication.class);
+            } else {
+                intent = new Intent(MainActivity.this, Welcome.class);
             }
+            startActivity(intent);
+            finish();
         }, SPLASH_TIMER);
     }
 }

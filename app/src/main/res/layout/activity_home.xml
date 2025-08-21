@@ -7,6 +7,16 @@
     android:layout_height="match_parent"
     tools:context=".Home">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+
+        android:titleTextColor="@color/black"
+        android:textAlignment="center"
+        app:title="Focus Session"
+        app:layout_constraintTop_toTopOf="parent"/>
+
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -16,7 +26,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
     </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
